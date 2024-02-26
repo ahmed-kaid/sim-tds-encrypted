@@ -32,4 +32,4 @@ pip install -r requirements.txt
 ## Usage
 
 To run the project, run the `client.py`.
-On line 88 of `client.py`, you can adjust, how many entries of the testing set should be classified. This is done, by modifying the `limit` paramter, which defaults to `None`.
+On line 88 of `client.py`, you can adjust, how many entries of the testing set should be classified. This is done, by modifying the `limit` paramter, which defaults to `20` and can be set to `None`.

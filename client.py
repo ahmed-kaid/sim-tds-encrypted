@@ -97,7 +97,7 @@ def main(limit: int = None) -> tuple:
 
 
 if __name__ == "__main__":
-    tables, ct_score, rf_score, nrf_score = main(limit=5)
+    tables, ct_score, rf_score, nrf_score = main(limit=20)
     print("\n\n" + "-" * 72)
     print("\nRandom Forest (unencrypted performance)\n")
     print(tabulate(tables[0], headers="firstrow"))
