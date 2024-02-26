@@ -4,6 +4,13 @@
 
 ## Installation
 
+#### Optionally create [virutal environment](https://docs.python.org/3/library/venv.html)
+
+```
+python -m venv .venv
+source .venv/bin/activate
+```
+
 #### 1. Install Cryptotree
 
 ```
@@ -24,13 +31,6 @@ cd sim-tds-encrypted
 ```
 
 #### 3. Install required packages
-
-#### Optionally create [virutal environment](https://docs.python.org/3/library/venv.html)
-
-```
-python -m venv .venv
-source .venv/bin/activate
-```
 
 ```
 pip install -r requirements.txt
