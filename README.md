@@ -36,6 +36,10 @@ cd sim-tds-encrypted
 pip install -r requirements.txt
 ```
 
+#### 4. Download data set
+
+- Download the [UNSW-NB15 dataset](https://www.kaggle.com/datasets/mrwellsdavid/unsw-nb15?utm_medium=social&utm_campaign=kaggle-dataset-share&utm_source=twitter) and put the CSV files into a folder called `unsw-nb15` at the root of the project.
+
 ## Usage
 
 To run the project, run the `client.py`.
