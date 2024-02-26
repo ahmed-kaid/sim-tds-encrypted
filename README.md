@@ -20,7 +20,7 @@ git clone https://github.com/dhuynh95/cryptotree.git
 
 ```
 git clone https://github.com/ahmed-kaid/sim-tds-encrypted.git
-cd sim-tds-encrpyted
+cd sim-tds-encrypted
 ```
 
 #### 3. Install required packages
