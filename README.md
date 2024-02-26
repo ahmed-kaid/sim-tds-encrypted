@@ -12,7 +12,7 @@ git clone https://github.com/dhuynh95/cryptotree.git
 
 - Before installing:
   1. Change line 24 of `cryptotree/settings.ini` to `requirements = torch nbdev scikit-learn matplotlib fastcore fastai` because `sklearn` is deprecated.
-  2. Change line 49 in `cryptotree/cryptotree/activations.py` activations.py to
+  2. Change line 49 in `cryptotree/cryptotree/activations.py` to
      `d = tree.n_features_in_`.
 - Follow https://github.com/dhuynh95/cryptotree#install
 
@@ -33,4 +33,3 @@ pip install -r requirements.txt
 
 To run the project, run the `client.py`.
 On line 88 of `client.py`, you can adjust, how many entries of the testing set should be classified. This is done, by modifying the `limit` paramter, which defaults to `None`.
-
