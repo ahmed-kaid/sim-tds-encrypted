@@ -81,6 +81,35 @@ def evaluate_results(
     )
 
 
+def print_metrics(score: list) -> None:
+    """Print out more metrics using the number of results.
+
+    Args:
+        score (list): Results from classifaction
+    """
+    tp = score[0]
+    fp = score[1]
+    tn = score[2]
+    fn = score[3]
+    acc = (tp + tn) / (tp + fn + tn + fp)
+    err = (fp + fn) / (tp + fn + tn + fp)
+    precision = (tp) / (tp + fp)
+    recall = (tp) / (tp + fn)
+    f_1 = (precision * recall) / (precision + recall)
+    beta = 0.5
+    f_beta_1 = ((beta**2 + 1) * precision * recall) / ((beta**2) * precision + recall)
+    beta = 2
+    f_beta_2 = ((beta**2 + 1) * precision * recall) / ((beta**2) * precision + recall)
+
+    print("\n\033[1m" + "Accuracy    " + "\033[0m: " + str(acc))
+    print("\033[1m" + "Error       " + "\033[0m: " + str(err))
+    print("\033[1m" + "Precision   " + "\033[0m: " + str(precision))
+    print("\033[1m" + "Recall      " + "\033[0m: " + str(recall))
+    print("\033[1m" + "F_1-Score   " + "\033[0m: " + str(f_1))
+    print("\033[1m" + "F_0.5-Score " + "\033[0m: " + str(f_beta_1))
+    print("\033[1m" + "F_2-Score   " + "\033[0m: " + str(f_beta_2) + "\n")
+
+
 def main(limit: int = None) -> tuple:
     """Asks the server to start the TDS
 
@@ -103,10 +132,13 @@ if __name__ == "__main__":
     print("\n\n" + "-" * 72)
     print("\nRandom Forest (unencrypted performance)\n")
     print(tabulate(tables[0], headers="firstrow"))
+    print_metrics(rf_score)
     print("-" * 72)
     print("\nNeural Random Forest (unencrypted performance)\n")
     print(tabulate(tables[1], headers="firstrow"))
+    print_metrics(nrf_score)
     print("-" * 72)
     print("Cryptotree (encrypted performance)\n")
     print(tabulate(tables[2], headers="firstrow"))
+    print_metrics(ct_score)
     print("-" * 72)

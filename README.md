@@ -43,4 +43,4 @@ pip install -r requirements.txt
 ## Usage
 
 To run the project, run the `client.py`.
-On line 102 of `client.py`, you can adjust, how many entries should be processed. This is done, by modifying the `limit` paramter, which defaults to `200` and can be set to `None`. This will pick a random subset of the training set, that will then be classified.
+On line 102 of `client.py`, you can adjust, how many entries should be processed. This is done, by modifying the `limit` parameter, which defaults to `200` and can be set to `None`. This will pick a random subset of the training set, that will then be classified.
