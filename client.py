@@ -63,6 +63,7 @@ def evaluate_results(
     for ctxt in b_ct_arr:
         ptx = seal.Plaintext()
         decryptor.decrypt(ctxt, ptx)  # noqa: F821 # type: ignore
+        # [:2], because these are the scores of the classes
         b_ct_decrypted_arr.append(encoder.decode_double(ptx)[:2])  # noqa: F821 # type: ignore
     ct_score = [0, 0, 0, 0]
     rf_score = [0, 0, 0, 0]
@@ -70,7 +71,7 @@ def evaluate_results(
     for i in tqdm(range(0, len(is_threat_arr)), desc="Scoring results..."):
         rf_score = data_helper.score(rf_score, b_rf_arr[i], is_threat_arr[i])
         nrf_score = data_helper.score_normalized(
-            nrf_score, b_nrf_arr[i], is_threat_arr[i]
+            nrf_score, b_nrf_arr[i][0], is_threat_arr[i]
         )
         ct_score = data_helper.score_normalized(
             ct_score, b_ct_decrypted_arr[i], is_threat_arr[i]
