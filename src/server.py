@@ -1,18 +1,16 @@
-import numpy as np
 from tqdm import tqdm
 
 from . import classifiers, data_helper
 
 
 class Server:
-    def __init__(self, limit=None) -> None:
+    def __init__(self, limit: int = None) -> None:
+        use_subset = limit is not None
         self.training_set = data_helper.get_training_set()
         self.testing_set, self.y_test = data_helper.normalize_data(
-            data_helper.get_testing_set()
+            data_helper.get_testing_set(), limit=limit, use_subset=use_subset
         )
-        if limit is None:
-            limit = np.shape(self.testing_set)[0]
-        self.b_ct_arr = [0] * limit
+        self.b_ct_arr = []
         self.b_rf_arr = []
         self.b_nrf_arr = []
         self.is_threat_arr = []
@@ -37,8 +35,7 @@ class Server:
         Returns:
             tuple: b_ct_arr, b_rf_arr, b_nrf_arr, is_threat_arr, results of threat detection.
         """
-        if limit is None:
-            limit = np.shape(self.testing_set)[0]
+        # self.y_test = self.y_test.to_numpy()
         for i in tqdm(range(0, limit), desc="Running threat detection..."):
             self.run_rf(i)
             self.run_nrf(i)

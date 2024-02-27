@@ -23,8 +23,6 @@ def run_encrypted_tests(
     Returns:
         np.ndarray: Encrypted training set
     """
-    if limit is None:
-        limit = np.shape(X_test)[0]
     b_ct_arr = []
     for i in tqdm(range(0, limit), desc="Running encrypted threat detection..."):
         pred = encrypt_and_classify(X_test, homomorphic_featurizer, s, i)
@@ -92,7 +90,7 @@ def main(limit: int = None) -> tuple:
     Returns:
         tuple: Returns a pretty table, as well as all three scores, containg TPs, FPs, TNs and FNs.
     """
-    s = server.Server()
+    s = server.Server(limit)
     b_rf_arr, b_nrf_arr, is_threat_arr = s.run_tds(limit)
     b_ct_arr = run_encrypted_tests(
         s.get_testing_set(), s.get_homomorphic_featurizer(), limit, s
@@ -101,7 +99,7 @@ def main(limit: int = None) -> tuple:
 
 
 if __name__ == "__main__":
-    tables, ct_score, rf_score, nrf_score = main(limit=None)
+    tables, ct_score, rf_score, nrf_score = main(limit=2000)
     print("\n\n" + "-" * 72)
     print("\nRandom Forest (unencrypted performance)\n")
     print(tabulate(tables[0], headers="firstrow"))

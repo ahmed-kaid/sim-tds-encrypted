@@ -1,3 +1,4 @@
+import random
 from typing import List
 
 import numpy as np
@@ -28,7 +29,9 @@ def get_training_set(
     return df
 
 
-def normalize_data(df: pd.DataFrame) -> np.ndarray:
+def normalize_data(
+    df: pd.DataFrame, limit: int = None, use_subset: bool = False
+) -> np.ndarray:
     """Normalizes Data, so it can be used for Neural Random Forest and Cryptotree
 
     Args:
@@ -133,7 +136,12 @@ def normalize_data(df: pd.DataFrame) -> np.ndarray:
     X = df[categorical_columns]
     y = df["attack_cat"].apply(lambda x: 0 if x == "Normal" else 1)
     pipe = Featurizer(categorical_columns)
-    return pipe.fit_transform(X), y
+    X, y = pipe.fit_transform(X), y
+    if use_subset:  # Get a random subset of elements
+        random.seed(1312)
+        samples = random.sample(range(0, np.shape(X)[0]), limit)
+        return X[samples], y[samples].to_numpy()
+    return X, y
 
 
 def value_to_float(
