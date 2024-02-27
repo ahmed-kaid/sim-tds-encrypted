@@ -12,7 +12,7 @@ def run_encrypted_tests(
     homomorphic_featurizer: HomomorphicTreeFeaturizer,
     limit: int,
     s: server.Server,
-) -> np.ndarray:
+) -> list:
     """Encrypts a set of testing data, to be used by Cryptotree.
 
     Args:
@@ -23,20 +23,18 @@ def run_encrypted_tests(
     Returns:
         np.ndarray: Encrypted training set
     """
-    encrypted_set = []
-    i = 0
     if limit is None:
         limit = np.shape(X_test)[0]
-    progress = tqdm(range(0, limit), desc="Running encrypted threat detection...")
-    for entry in X_test:
-        ctx = homomorphic_featurizer.encrypt(entry)
-        s.run_ct(ctx)
-        progress.update(1)
-        i += 1
-        if i > limit:
-            break
-    progress.close()
-    return encrypted_set
+    b_ct_arr = []
+    for i in tqdm(range(0, limit), desc="Running encrypted threat detection..."):
+        pred = encrypt_and_classify(X_test, homomorphic_featurizer, s, i)
+        b_ct_arr.append(pred)
+    return b_ct_arr
+
+
+def encrypt_and_classify(X_test, homomorphic_featurizer, s, i):
+    ctx = homomorphic_featurizer.encrypt(X_test[i])
+    return s.run_ct(ctx)
 
 
 def evaluate_results(
@@ -97,7 +95,7 @@ def main(limit: int = None) -> tuple:
     s = server.Server()
     b_rf_arr, b_nrf_arr, is_threat_arr = s.run_tds(limit)
     b_ct_arr = run_encrypted_tests(
-        s.get_training_set, s.get_homomorphic_featurizer, limit, s
+        s.get_testing_set(), s.get_homomorphic_featurizer(), limit, s
     )
     return evaluate_results(b_ct_arr, b_rf_arr, b_nrf_arr, is_threat_arr)
 

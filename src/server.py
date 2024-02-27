@@ -5,22 +5,27 @@ from . import classifiers, data_helper
 
 
 class Server:
-    def __init__(self) -> None:
+    def __init__(self, limit=None) -> None:
         self.training_set = data_helper.get_training_set()
         self.testing_set, self.y_test = data_helper.normalize_data(
             data_helper.get_testing_set()
         )
-        self.b_ct_arr = []
+        if limit is None:
+            limit = np.shape(self.testing_set)[0]
+        self.b_ct_arr = [0] * limit
         self.b_rf_arr = []
         self.b_nrf_arr = []
         self.is_threat_arr = []
         self.classifier = classifiers.Classifier(self.training_set)
 
-    def get_training_set(self):
-        return self.training_set
+    def get_testing_set(self):
+        return self.testing_set
 
     def get_homomorphic_featurizer(self):
-        return self.classifier.__homomorphic_featurizer
+        return self.classifier.get_hf()
+
+    def get_b_ct_arr(self):
+        return self.b_ct_arr
 
     def run_tds(self, limit: int = None) -> None:
         """
@@ -38,9 +43,10 @@ class Server:
             self.run_rf(i)
             self.run_nrf(i)
             self.is_threat_arr.append(bool(self.y_test[i]))
+        return self.b_rf_arr, self.b_nrf_arr, self.is_threat_arr
 
     def run_ct(self, ctx):
-        self.b_ct_arr.append(self.classifier.cryptotree(ctx))
+        return self.classifier.cryptotree(ctx)
 
     def run_nrf(self, i):
         self.b_nrf_arr.append(self.classifier.neural_random_forest(self.testing_set[i]))
