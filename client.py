@@ -7,10 +7,11 @@ from cryptotree.cryptotree import HomomorphicTreeFeaturizer
 from src import data_helper, server
 
 
-def encrypt_set(
+def run_encrypted_tests(
     X_test: np.ndarray,
     homomorphic_featurizer: HomomorphicTreeFeaturizer,
     limit: int,
+    s: server.Server,
 ) -> np.ndarray:
     """Encrypts a set of testing data, to be used by Cryptotree.
 
@@ -26,10 +27,10 @@ def encrypt_set(
     i = 0
     if limit is None:
         limit = np.shape(X_test)[0]
-    progress = tqdm(range(0, limit), desc="Encrypting entries...")
+    progress = tqdm(range(0, limit), desc="Running encrypted threat detection...")
     for entry in X_test:
         ctx = homomorphic_featurizer.encrypt(entry)
-        encrypted_set.append(ctx)
+        s.run_ct(ctx)
         progress.update(1)
         i += 1
         if i > limit:
@@ -93,12 +94,16 @@ def main(limit: int = None) -> tuple:
     Returns:
         tuple: Returns a pretty table, as well as all three scores, containg TPs, FPs, TNs and FNs.
     """
-    b_ct_arr, b_rf_arr, b_nrf_arr, is_threat_arr = server.run_tds(limit)
+    s = server.Server()
+    b_rf_arr, b_nrf_arr, is_threat_arr = s.run_tds(limit)
+    b_ct_arr = run_encrypted_tests(
+        s.get_training_set, s.get_homomorphic_featurizer, limit, s
+    )
     return evaluate_results(b_ct_arr, b_rf_arr, b_nrf_arr, is_threat_arr)
 
 
 if __name__ == "__main__":
-    tables, ct_score, rf_score, nrf_score = main(limit=20)
+    tables, ct_score, rf_score, nrf_score = main(limit=None)
     print("\n\n" + "-" * 72)
     print("\nRandom Forest (unencrypted performance)\n")
     print(tabulate(tables[0], headers="firstrow"))

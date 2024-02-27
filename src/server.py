@@ -1,36 +1,49 @@
 import numpy as np
 from tqdm import tqdm
 
-import client
-
 from . import classifiers, data_helper
 
 
-def run_tds(limit: int = None) -> tuple:
-    """
-    Starts the simulated Threat Detection System
+class Server:
+    def __init__(self) -> None:
+        self.training_set = data_helper.get_training_set()
+        self.testing_set, self.y_test = data_helper.normalize_data(
+            data_helper.get_testing_set()
+        )
+        self.b_ct_arr = []
+        self.b_rf_arr = []
+        self.b_nrf_arr = []
+        self.is_threat_arr = []
+        self.classifier = classifiers.Classifier(self.training_set)
 
-    Args:
-        limit (int, optional): Limit how many tests should be classified. Defaults to None.
+    def get_training_set(self):
+        return self.training_set
 
-    Returns:
-        tuple: b_ct_arr, b_rf_arr, b_nrf_arr, is_threat_arr, results of threat detection.
-    """
-    training_set = data_helper.get_training_set()
-    testing_set, y_test = data_helper.normalize_data(data_helper.get_testing_set())
-    b_ct_arr = []
-    b_rf_arr = []
-    b_nrf_arr = []
-    is_threat_arr = []
-    classifier = classifiers.Classifier(training_set)
-    encrypted_testing_set = client.encrypt_set(
-        testing_set, classifier.get_hf(), limit=limit
-    )
-    if limit is None:
-        limit = np.shape(testing_set)[0]
-    for i in tqdm(range(0, limit), desc="Running threat detection..."):
-        b_rf_arr.append(classifier.random_forest(testing_set[i]))
-        b_nrf_arr.append(classifier.neural_random_forest(testing_set[i]))
-        b_ct_arr.append(classifier.cryptotree(encrypted_testing_set[i]))
-        is_threat_arr.append(bool(y_test[i]))
-    return b_ct_arr, b_rf_arr, b_nrf_arr, is_threat_arr
+    def get_homomorphic_featurizer(self):
+        return self.classifier.__homomorphic_featurizer
+
+    def run_tds(self, limit: int = None) -> None:
+        """
+        Starts the simulated Threat Detection System
+
+        Args:
+            limit (int, optional): Limit how many tests should be classified. Defaults to None.
+
+        Returns:
+            tuple: b_ct_arr, b_rf_arr, b_nrf_arr, is_threat_arr, results of threat detection.
+        """
+        if limit is None:
+            limit = np.shape(self.testing_set)[0]
+        for i in tqdm(range(0, limit), desc="Running threat detection..."):
+            self.run_rf(i)
+            self.run_nrf(i)
+            self.is_threat_arr.append(bool(self.y_test[i]))
+
+    def run_ct(self, ctx):
+        self.b_ct_arr.append(self.classifier.cryptotree(ctx))
+
+    def run_nrf(self, i):
+        self.b_nrf_arr.append(self.classifier.neural_random_forest(self.testing_set[i]))
+
+    def run_rf(self, i: int):
+        self.b_rf_arr.append(self.classifier.random_forest(self.testing_set[i]))
