@@ -40,9 +40,13 @@ pip install -r requirements.txt
 
 - Download the [UNSW-NB15 dataset](https://www.kaggle.com/datasets/mrwellsdavid/unsw-nb15?utm_medium=social&utm_campaign=kaggle-dataset-share&utm_source=twitter) and put the CSV files into a folder called `unsw-nb15` at the root of the project.
 
+## Results
+
+The results of running this script multiple times with different parameters can be found in the `results/` folder.
+
 ## Usage
 
-To run the project, run the `client.py`.
+To run the project for yourself, run the `client.py`.
 
 ```
 python client.py

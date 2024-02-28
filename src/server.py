@@ -52,7 +52,7 @@ class Server:
         ):
             self.run_rf(i)
             self.run_nrf(i)
-            self.is_threat_arr.append(bool(self.y_test[i]))
+            self.is_threat_arr.append(bool(self.y_test.values[i]))
         return self.b_rf_arr, self.b_nrf_arr, self.is_threat_arr
 
     def run_ct(self, ctx):

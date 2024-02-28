@@ -1,4 +1,3 @@
-import random
 from typing import List
 
 import numpy as np
@@ -27,7 +26,6 @@ def get_training_set(
     """
     df = pd.read_csv(data_folder_path + file_path, header=0)
     df.drop(columns=df.columns[0], axis=1, inplace=True)  # remove ID column
-    print(df)
     if attack_cat is not None:
         df.drop(df[df.attack_cat != attack_cat].index, inplace=True)
     return df
@@ -137,16 +135,14 @@ def normalize_data(
         "attack_cat",
         "label",
     ]
+    if use_subset:  # Get a random subset of elements
+        if limit > df.shape[0]:
+            limit = df.shape[0]
+        df = df.sample(limit)
     X = df[categorical_columns]
     y = df["attack_cat"].apply(lambda x: 0 if x == "Normal" else 1)
     pipe = Featurizer(categorical_columns)
     X, y = pipe.fit_transform(X), y
-    if use_subset:  # Get a random subset of elements
-        if limit > df.shape[0]:
-            limit = df.shape[0]
-        random.seed(1312)
-        samples = random.sample(range(0, np.shape(X)[0]), limit)
-        return X[samples], y.to_numpy()[samples]
     return X, y
 
 

@@ -29,7 +29,9 @@ def run_encrypted_tests(
     b_ct_arr = []
     if limit > np.shape(X_test)[0]:
         limit = np.shape(X_test)[0]
-    for i in tqdm(range(0, limit), desc="Running encrypted threat detection..."):
+    for i in tqdm(
+        range(0, limit), desc="Running encrypted threat detection...", file=sys.stdout
+    ):
         pred = encrypt_and_classify(X_test, homomorphic_featurizer, s, i)
         b_ct_arr.append(pred)
     return b_ct_arr
@@ -70,7 +72,9 @@ def evaluate_results(
     ct_score = [0, 0, 0, 0]
     rf_score = [0, 0, 0, 0]
     nrf_score = [0, 0, 0, 0]
-    for i in tqdm(range(0, len(is_threat_arr)), desc="Scoring results..."):
+    for i in tqdm(
+        range(0, len(is_threat_arr)), desc="Scoring results...", file=sys.stdout
+    ):
         rf_score = data_helper.score(rf_score, b_rf_arr[i], is_threat_arr[i])
         nrf_score = data_helper.score_normalized(
             nrf_score, b_nrf_arr[i][0], is_threat_arr[i]
@@ -114,13 +118,13 @@ def print_metrics(score: list) -> None:
         else 0
     )
 
-    print("\n\033[1m" + "Accuracy    " + "\033[0m: " + str(acc))
-    print("\033[1m" + "Error       " + "\033[0m: " + str(err))
-    print("\033[1m" + "Precision   " + "\033[0m: " + str(precision))
-    print("\033[1m" + "Recall      " + "\033[0m: " + str(recall))
-    print("\033[1m" + "F_1-Score   " + "\033[0m: " + str(f_1))
-    print("\033[1m" + "F_0.5-Score " + "\033[0m: " + str(f_beta_1))
-    print("\033[1m" + "F_2-Score   " + "\033[0m: " + str(f_beta_2) + "\n")
+    print("Accuracy    " + str(acc))
+    print("Error       " + str(err))
+    print("Precision   " + str(precision))
+    print("Recall      " + str(recall))
+    print("F_1-Score   " + str(f_1))
+    print("F_0.5-Score " + str(f_beta_1))
+    print("F_2-Score   " + str(f_beta_2) + "\n")
 
 
 def cli_helper(args: list) -> Union[int | None, str | None]:
