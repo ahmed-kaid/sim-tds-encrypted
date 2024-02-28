@@ -1,3 +1,5 @@
+import sys
+
 import numpy as np
 from tqdm import tqdm
 
@@ -45,7 +47,9 @@ class Server:
                 f" ({np.shape(self.testing_set)[0]}). Adjusting..."
             )
             limit = np.shape(self.testing_set)[0]
-        for i in tqdm(range(0, limit), desc="Running threat detection..."):
+        for i in tqdm(
+            range(0, limit), desc="Running threat detection...", file=sys.stdout
+        ):
             self.run_rf(i)
             self.run_nrf(i)
             self.is_threat_arr.append(bool(self.y_test[i]))

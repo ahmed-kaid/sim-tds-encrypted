@@ -26,6 +26,8 @@ def get_training_set(
         pd.DataFrame: An dataframe of all entries in the CSV file.
     """
     df = pd.read_csv(data_folder_path + file_path, header=0)
+    df.drop(columns=df.columns[0], axis=1, inplace=True)  # remove ID column
+    print(df)
     if attack_cat is not None:
         df.drop(df[df.attack_cat != attack_cat].index, inplace=True)
     return df
@@ -45,7 +47,6 @@ def normalize_data(
         np.ndarray: Normalized data
     """
     categorical_columns = [
-        "id",
         "dur",
         "proto",
         "service",
@@ -91,7 +92,6 @@ def normalize_data(
         "label",
     ]
     df.columns = df.columns = [
-        "id",
         "dur",
         "proto",
         "service",
