@@ -4,7 +4,7 @@
 
 ## Installation
 
-#### Optionally create [virutal environment](https://docs.python.org/3/library/venv.html)
+#### Optionally create [virtual environment](https://docs.python.org/3/library/venv.html)
 
 ```
 python -m venv .venv
@@ -43,4 +43,25 @@ pip install -r requirements.txt
 ## Usage
 
 To run the project, run the `client.py`.
-On line 102 of `client.py`, you can adjust, how many entries should be processed. This is done, by modifying the `limit` parameter, which defaults to `200` and can be set to `None`. This will pick a random subset of the training set, that will then be classified.
+
+```
+python client.py
+```
+
+You can specify how many testing set entries should be processed, by using the `--limit` parameter. The default value is 200. This will pick a random subset of the training set, that will then be classified.
+
+```
+python client.py --limit <number | None>
+```
+
+You can also specify, if you want to take a look at a specific attack category. The default value is None.
+
+```
+python client.py --attack_cat <str | None>
+```
+
+Attack categories can be found via the help command.
+
+```
+python client.py --help
+```

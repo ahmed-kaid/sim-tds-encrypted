@@ -1,3 +1,6 @@
+import sys
+from typing import Union
+
 import numpy as np
 import tenseal.sealapi as seal
 from tabulate import tabulate
@@ -110,6 +113,66 @@ def print_metrics(score: list) -> None:
     print("\033[1m" + "F_2-Score   " + "\033[0m: " + str(f_beta_2) + "\n")
 
 
+def cli_helper(args: list) -> Union[int | None, str | None]:
+    """Parses through CLI arguments and sets limit and attack_cat variables
+
+    Args:
+        args (list): CLI arguments
+
+    Raises:
+        ValueError: If wrong arguments are given
+
+    Returns:
+        Union[int | None, str | None]: limit, attack_cat
+    """
+    possible_values = [
+        "Analysis",
+        "Exploits",
+        "Normal",
+        "DoS",
+        "Reconnaissance",
+        "Fuzzers",
+        "Backdoor",
+        "Generic",
+        "Shellcode",
+        "Worms",
+    ]
+    help_text = (
+        "Usage: python client.py [options...]\n"
+        "     --limit <int | None>\tLimits how many entries should be processed. Defaults to 200\n"
+        "     --attack_cat <str | None>\tFilter by specific attack category\n"
+        "\nPossible attack categories:\n"
+        "     " + ", ".join(possible_values)
+    )
+    if "--help" in args:
+        print(help_text)
+        sys.exit(0)
+    limit = 200  # default value
+    attack_cat = None
+    try:
+        if "--limit" in args:
+            limit = args[args.index("--limit") + 1]
+            if limit == "None":
+                limit = None
+            elif limit.isnumeric():
+                limit = int(limit)
+            else:
+                raise ValueError("Limit is neither a number nor 'None'.")
+        if "--attack_cat" in args:
+            attack_cat = args[args.index("--attack_cat") + 1]
+            if attack_cat == "None":
+                attack_cat = None
+            elif attack_cat not in possible_values:
+                raise ValueError(
+                    f"Attack Category {attack_cat} not in list of possible values."
+                )
+    except ValueError as e:
+        print(e)
+        print(help_text)
+        sys.exit(1)
+    return limit, attack_cat
+
+
 def main(limit: int = None) -> tuple:
     """Asks the server to start the TDS
 
@@ -128,7 +191,8 @@ def main(limit: int = None) -> tuple:
 
 
 if __name__ == "__main__":
-    tables, ct_score, rf_score, nrf_score = main(limit=200)
+    limit, attack_cat = cli_helper(sys.argv)
+    tables, ct_score, rf_score, nrf_score = main(limit)
     print("\n\n" + "-" * 72)
     print("\nRandom Forest (unencrypted performance)\n")
     print(tabulate(tables[0], headers="firstrow"))

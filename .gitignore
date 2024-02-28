@@ -160,6 +160,8 @@ cython_debug/
 #.idea/
 
 # Cryptotree
-cryptotree
+cryptotree/
 # Threat detection sets
-unsw-nb15
+unsw-nb15/
+# VSCode lauch.json
+.vscode/
