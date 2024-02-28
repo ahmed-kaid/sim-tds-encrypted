@@ -27,6 +27,8 @@ def run_encrypted_tests(
         np.ndarray: Encrypted training set
     """
     b_ct_arr = []
+    if limit > np.shape(X_test)[0]:
+        limit = np.shape(X_test)[0]
     for i in tqdm(range(0, limit), desc="Running encrypted threat detection..."):
         pred = encrypt_and_classify(X_test, homomorphic_featurizer, s, i)
         b_ct_arr.append(pred)
@@ -96,13 +98,21 @@ def print_metrics(score: list) -> None:
     fn = score[3]
     acc = (tp + tn) / (tp + fn + tn + fp)
     err = (fp + fn) / (tp + fn + tn + fp)
-    precision = (tp) / (tp + fp)
-    recall = (tp) / (tp + fn)
-    f_1 = (precision * recall) / (precision + recall)
+    precision = (tp) / (tp + fp) if (tp + fp) > 0 else 0
+    recall = (tp) / (tp + fn) if (tp + fn) > 0 else 0
+    f_1 = (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
     beta = 0.5
-    f_beta_1 = ((beta**2 + 1) * precision * recall) / ((beta**2) * precision + recall)
+    f_beta_1 = (
+        ((beta**2 + 1) * precision * recall) / ((beta**2) * precision + recall)
+        if ((beta**2) * precision + recall) > 0
+        else 0
+    )
     beta = 2
-    f_beta_2 = ((beta**2 + 1) * precision * recall) / ((beta**2) * precision + recall)
+    f_beta_2 = (
+        ((beta**2 + 1) * precision * recall) / ((beta**2) * precision + recall)
+        if ((beta**2) * precision + recall) > 0
+        else 0
+    )
 
     print("\n\033[1m" + "Accuracy    " + "\033[0m: " + str(acc))
     print("\033[1m" + "Error       " + "\033[0m: " + str(err))
@@ -173,7 +183,7 @@ def cli_helper(args: list) -> Union[int | None, str | None]:
     return limit, attack_cat
 
 
-def main(limit: int = None) -> tuple:
+def main(limit: int = None, attack_cat: str = None) -> tuple:
     """Asks the server to start the TDS
 
     Args:
@@ -182,7 +192,7 @@ def main(limit: int = None) -> tuple:
     Returns:
         tuple: Returns a pretty table, as well as all three scores, containg TPs, FPs, TNs and FNs.
     """
-    s = server.Server(limit)
+    s = server.Server(limit, attack_cat)
     b_rf_arr, b_nrf_arr, is_threat_arr = s.run_tds(limit)
     b_ct_arr = run_encrypted_tests(
         s.get_testing_set(), s.get_homomorphic_featurizer(), limit, s
@@ -192,7 +202,9 @@ def main(limit: int = None) -> tuple:
 
 if __name__ == "__main__":
     limit, attack_cat = cli_helper(sys.argv)
-    tables, ct_score, rf_score, nrf_score = main(limit)
+    tables, ct_score, rf_score, nrf_score = main(limit, attack_cat)
+    if attack_cat is not None:
+        print(f"Filtered results by attack category: {attack_cat}")
     print("\n\n" + "-" * 72)
     print("\nRandom Forest (unencrypted performance)\n")
     print(tabulate(tables[0], headers="firstrow"))

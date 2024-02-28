@@ -12,6 +12,7 @@ from cryptotree.preprocessing import Featurizer
 def get_training_set(
     data_folder_path: str = "unsw-nb15/",
     file_path: str = "UNSW_NB15_training-set.csv",
+    attack_cat: str = None,
 ) -> pd.DataFrame:
     """Reads a UNSW-NB15 CSV file and converts its entries into vectors.
 
@@ -25,12 +26,15 @@ def get_training_set(
         pd.DataFrame: An dataframe of all entries in the CSV file.
     """
     df = pd.read_csv(data_folder_path + file_path, header=0)
-
+    if attack_cat is not None:
+        df.drop(df[df.attack_cat != attack_cat].index, inplace=True)
     return df
 
 
 def normalize_data(
-    df: pd.DataFrame, limit: int = None, use_subset: bool = False
+    df: pd.DataFrame,
+    limit: int = None,
+    use_subset: bool = False,
 ) -> np.ndarray:
     """Normalizes Data, so it can be used for Neural Random Forest and Cryptotree
 
@@ -138,9 +142,11 @@ def normalize_data(
     pipe = Featurizer(categorical_columns)
     X, y = pipe.fit_transform(X), y
     if use_subset:  # Get a random subset of elements
+        if limit > df.shape[0]:
+            limit = df.shape[0]
         random.seed(1312)
         samples = random.sample(range(0, np.shape(X)[0]), limit)
-        return X[samples], y[samples].to_numpy()
+        return X[samples], y.to_numpy()[samples]
     return X, y
 
 
@@ -370,13 +376,15 @@ def value_to_float(
         return possible_values[floats.index(value)]
 
 
-def get_testing_set() -> pd.DataFrame:
+def get_testing_set(attack_cat: str = None) -> pd.DataFrame:
     """Obtain UNSW-NB15 testing set.
 
     Returns:
         DataFrame: Testing set
     """
-    return get_training_set(file_path="UNSW_NB15_testing-set.csv")
+    return get_training_set(
+        file_path="UNSW_NB15_testing-set.csv", attack_cat=attack_cat
+    )
 
 
 def score(curr_score: list, classification: bool, result: bool) -> list:

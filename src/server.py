@@ -1,14 +1,17 @@
+import numpy as np
 from tqdm import tqdm
 
 from . import classifiers, data_helper
 
 
 class Server:
-    def __init__(self, limit: int = None) -> None:
+    def __init__(self, limit: int = None, attack_cat: str = None) -> None:
         use_subset = limit is not None
         self.training_set = data_helper.get_training_set()
         self.testing_set, self.y_test = data_helper.normalize_data(
-            data_helper.get_testing_set(), limit=limit, use_subset=use_subset
+            data_helper.get_testing_set(attack_cat),
+            limit=limit,
+            use_subset=use_subset,
         )
         self.b_ct_arr = []
         self.b_rf_arr = []
@@ -36,6 +39,12 @@ class Server:
             tuple: b_ct_arr, b_rf_arr, b_nrf_arr, is_threat_arr, results of threat detection.
         """
         # self.y_test = self.y_test.to_numpy()
+        if limit > np.shape(self.testing_set)[0]:
+            print(
+                f"Limit {limit} is bigger than size of testing set"
+                f" ({np.shape(self.testing_set)[0]}). Adjusting..."
+            )
+            limit = np.shape(self.testing_set)[0]
         for i in tqdm(range(0, limit), desc="Running threat detection..."):
             self.run_rf(i)
             self.run_nrf(i)
