@@ -165,3 +165,5 @@ cryptotree/
 unsw-nb15/
 # VSCode lauch.json
 .vscode/
+# tree.dot files
+results/trees/*/*.dot

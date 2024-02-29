@@ -1,9 +1,15 @@
 import builtins
+import pathlib
+import subprocess
+import sys
+import time
 
 import numpy as np
 import tenseal.sealapi as seal
 import torch
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import export_graphviz
+from tqdm import tqdm
 
 from cryptotree.cryptotree import (
     HomomorphicNeuralRandomForest,
@@ -37,9 +43,85 @@ class Classifier:
         Returns:
             RandomForestClassifier: Trained RF classifier
         """
-        return RandomForestClassifier(max_depth=4, random_state=0).fit(
+        rf = RandomForestClassifier(max_depth=4, random_state=0).fit(
             self.__train_vecs, self.__target_vals
         )
+        if "--export-tree-imgs" in sys.argv:
+            # This requires graphviz installed
+            # https://towardsdatascience.com/how-to-visualize-a-decision-tree-from-a-random-forest-in-python-using-scikit-learn-38ad2d75f21c
+            t = time.localtime()
+            current_time = time.strftime("%Y-%m-%d_%H-%M-%S", t)
+            path = "results/trees/" + current_time
+            pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+            for i in tqdm(
+                range(0, len(rf.estimators_)),
+                desc=f"Adding images of trees to {path}...",
+            ):
+                export_graphviz(
+                    rf.estimators_[i],
+                    out_file=path + f"/{'%02d' % i}.dot",
+                    feature_names=[
+                        "dur",
+                        "proto",
+                        "service",
+                        "state",
+                        "spkts",
+                        "dpkts",
+                        "sbytes",
+                        "dbytes",
+                        "rate",
+                        "sttl",
+                        "dttl",
+                        "sload",
+                        "dload",
+                        "sloss",
+                        "dloss",
+                        "sinpkt",
+                        "dinpkt",
+                        "sjit",
+                        "djit",
+                        "swin",
+                        "stcpb",
+                        "dtcpb",
+                        "dwin",
+                        "tcprtt",
+                        "synack",
+                        "ackdat",
+                        "smean",
+                        "dmean",
+                        "trans_depth",
+                        "response_body_len",
+                        "ct_srv_src",
+                        "ct_state_ttl",
+                        "ct_dst_ltm",
+                        "ct_src_dport_ltm",
+                        "ct_dst_sport_ltm",
+                        "ct_dst_src_ltm",
+                        "is_ftp_login",
+                        "ct_ftp_cmd",
+                        "ct_flw_http_mthd",
+                        "ct_src_ltm",
+                        "ct_srv_dst",
+                        "is_sm_ips_ports",
+                        "label",
+                    ],
+                    class_names=["No Threat", "Threat"],
+                    rounded=True,
+                    proportion=False,
+                    precision=2,
+                    filled=True,
+                )
+                subprocess.call(
+                    [
+                        "dot",
+                        "-Tpng",
+                        path + f"/{'%02d' % i}.dot",
+                        "-o",
+                        path + f"/{'%02d' % i}.png",
+                        "-Gdpi=600",
+                    ]
+                )
+        return rf
 
     def __train_h_rf(self) -> tuple:
         """Trains a homomorphic Random Forest (HRF)

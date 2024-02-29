@@ -20,6 +20,7 @@ def get_training_set(
         Defaults to "unsw-nb15/".
         file_path (str. optional): Path of the file, after the data folder.
         Defaults to "UNSW_NB15_training-set.csv".
+        attack_cat (str, optional): Limit set to only include entries with category.
 
     Returns:
         pd.DataFrame: An dataframe of all entries in the CSV file.
@@ -374,6 +375,8 @@ def value_to_float(
 
 def get_testing_set(attack_cat: str = None) -> pd.DataFrame:
     """Obtain UNSW-NB15 testing set.
+    Args:
+        attack_cat (str, optional): Limit set to only include entries with category.
 
     Returns:
         DataFrame: Testing set
