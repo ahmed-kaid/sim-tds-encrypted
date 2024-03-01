@@ -2,6 +2,10 @@
 
 > Using the [UNSW-NB15 Dataset](https://research.unsw.edu.au/projects/unsw-nb15-dataset), [CKKS Encryption scheme](https://eprint.iacr.org/2016/421.pdf), [TenSEAL](https://github.com/OpenMined/TenSEAL) and [Cryptotree](https://github.com/dhuynh95/cryptotree/)
 
+## Requirements
+
+- Python >= v3.10.12
+
 ## Installation
 
 #### Optionally create [virtual environment](https://docs.python.org/3/library/venv.html)
@@ -78,7 +82,7 @@ python client.py --attack_cat <str | None>
 There is an option to generate images of the trees inside of the RF classifier. This takes a long time and requries [Graphviz](https://graphviz.org/). It probably makes more sense to just look at my [results](https://github.com/ahmed-kaid/sim-tds-encrypted/tree/main/results/trees) instead.
 
 ```python
-python client.py --export-tree-img
+python client.py --export-tree-imgs
 ```
 
 Attack categories can be found via the help command.

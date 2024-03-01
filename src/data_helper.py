@@ -424,7 +424,7 @@ def score_normalized(curr_score: list, classification: list, result: bool) -> li
         list: _description_
     """
     # TODO: Understand classification and evaluate results
-    return score(curr_score, classification[1] > classification[0], result)
+    return score(curr_score, classification[1] >= classification[0], result)
 
 
 def scores_to_table(ct: list, rf: list, nrf: list, total: int, acc: str = ".2") -> list:
