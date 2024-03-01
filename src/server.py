@@ -41,7 +41,9 @@ class Server:
             tuple: b_ct_arr, b_rf_arr, b_nrf_arr, is_threat_arr, results of threat detection.
         """
         # self.y_test = self.y_test.to_numpy()
-        if limit > np.shape(self.testing_set)[0]:
+        if limit is None:
+            limit = np.shape(self.testing_set)[0]
+        elif limit > np.shape(self.testing_set)[0]:
             print(
                 f"Limit {limit} is bigger than size of testing set"
                 f" ({np.shape(self.testing_set)[0]}). Adjusting..."

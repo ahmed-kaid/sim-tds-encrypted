@@ -56,6 +56,7 @@ class Classifier:
             for i in tqdm(
                 range(0, len(rf.estimators_)),
                 desc=f"Adding images of trees to {path}...",
+                file=sys.stdout,
             ):
                 export_graphviz(
                     rf.estimators_[i],
