@@ -27,7 +27,7 @@ def run_encrypted_tests(
         np.ndarray: Encrypted training set
     """
     b_ct_arr = []
-    if limit > np.shape(X_test)[0]:
+    if limit is None or limit > np.shape(X_test)[0]:
         limit = np.shape(X_test)[0]
     for i in tqdm(
         range(0, limit), desc="Running encrypted threat detection...", file=sys.stdout

@@ -137,7 +137,7 @@ def normalize_data(
         "label",
     ]
     if use_subset:  # Get a random subset of elements
-        if limit > df.shape[0]:
+        if limit is None or limit > df.shape[0]:
             limit = df.shape[0]
         df = df.sample(limit)
     X = df[categorical_columns]
