@@ -38,8 +38,21 @@ def run_encrypted_tests(
 
 
 def encrypt_and_classify(X_test, homomorphic_featurizer, s, i):
+    time_functions = "--time_functions" in sys.argv
+    if time_functions:
+        import time
+
+        encr_start = time.time()
     ctx = homomorphic_featurizer.encrypt(X_test[i])
-    return s.run_ct(ctx)
+    if time_functions:
+        encr_end = time.time()
+        pred_start = time.time()
+    pred = s.run_ct(ctx)
+    if time_functions:
+        pred_end = time.time()
+        print("Time taken for encryption:", encr_end - encr_start, "seconds")
+        print("Time taken for classification:", pred_end - pred_start, "seconds")
+    return pred
 
 
 def evaluate_results(
